@@ -1,0 +1,5 @@
+project_name="amazon"
+project_env="prod"
+domain_name="jijinmichael.online"
+hostname="shopping"
+hosted_zone="Z055360718SDDQS3K8J5J"

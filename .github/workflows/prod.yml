@@ -1,0 +1,46 @@
+on:
+  push:
+    branches:
+      - prod
+
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ap-south-1
+      
+    steps:
+      - name: Checkout Terraform Code
+        uses: actions/checkout@v2
+        
+      - name: Terraform Installation
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.2
+     
+      - name: Terraform init
+        run: terraform init -backend-config="bucket=${{ secrets.PROD_TERRAFORM_BUCKET }}"
+        working-directory: .
+            
+            
+      - name: Terraform fmt
+        run: terraform fmt
+        working-directory: .
+        
+          
+      - name: Terraform validate
+        run: terraform validate
+        working-directory: .
+        
+
+      - name: Terraform plan
+        run: terraform plan -var-file=prod.tfvars
+        working-directory: .
+        
+        
+      - name: Terraform apply
+        run: terraform apply -auto-approve  -var-file=prod.tfvars
+        working-directory: .
